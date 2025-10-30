@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MYWAI Marketplace Tool - Events Viewer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="app-header">
+        <div class="brand">MYWAI Events Toolkit</div>
+        <div class="meta">
+            <span id="userMeta">Not authenticated</span>
+        </div>
+    </header>
+
+    <main class="app-main">
+        <section class="sidebar">
+            <div class="panel">
+                <div class="panel-title">Controls</div>
+                <div class="control-group">
+                    <label for="apiBaseUrl">API Base URL</label>
+                    <input id="apiBaseUrl" type="text" placeholder="https://rossana.platform.myw.ai/api" />
+                </div>
+                <div class="control-group">
+                    <label for="authToken">Authorization Token (Bearer)</label>
+                    <input id="authToken" type="password" placeholder="paste token here if not provided by platform" />
+                </div>
+                <div class="control-group">
+                    <label for="equipmentId">Equipment ID</label>
+                    <input id="equipmentId" type="text" placeholder="191" />
+                </div>
+                <button id="loadEventsBtn" class="btn primary">Load Events</button>
+                <div id="controlsNote" class="note">Values may be overridden by platform payload.</div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">Events</div>
+                <div id="eventsList" class="events-list empty">No events yet. Click "Load Events".</div>
+            </div>
+        </section>
+
+        <section class="content">
+            <div class="panel">
+                <div class="panel-title">Selected Event</div>
+                <div id="eventDetails" class="event-details empty">Select an event to view details.</div>
+            </div>
+
+            <div class="grid">
+                <div class="panel">
+                    <div class="panel-title">Images</div>
+                    <div id="imagesGrid" class="images-grid empty">No images.</div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <div class="panel-title">Files</div>
+                <div id="filesList" class="files-list empty">No files.</div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="app-footer">
+        <span>Listening for platform payload via postMessage…</span>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Optional: Auto-focus API base URL for quick setup in standalone usage
+        document.getElementById('apiBaseUrl').focus();
+    </script>
+</body>
+</html>
+
