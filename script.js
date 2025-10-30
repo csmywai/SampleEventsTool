@@ -49,10 +49,22 @@
 
   window.addEventListener('message', (evt) => {
     const data = evt?.data;
-    if (!data || data.type !== 'mywai_payload') return;
-
-    applyPayload(data);
+    if (!data) return;
+    // New platform bootstrap format
+    if (data.message === 'mywai-tool-init') {
+      const mapped = mapPlatformInitToPayload(data);
+      applyPayload(mapped);
+      return;
+    }
+    // Backward-compat payload format
+    if (data.type === 'mywai_payload') {
+      applyPayload(data);
+      return;
+    }
   });
+
+  // Proactively acknowledge so the platform will send the init payload
+  try { window.parent?.postMessage('acknowledgment', '*'); } catch {}
 
   function applyPayload(payload) {
     state.apiBaseUrl = payload.apiBaseUrl || state.apiBaseUrl || $apiBaseUrl.value || null;
@@ -64,6 +76,18 @@
     if (state.equipmentId) $equipmentId.value = state.equipmentId;
     if (state.token && $authToken) $authToken.value = state.token.replace(/^Bearer\s+/i, '');
 
+    // Hide inputs when values are supplied by the platform
+    if (state.apiBaseUrl && $apiBaseUrl?.parentElement) {
+      $apiBaseUrl.parentElement.style.display = 'none';
+    }
+    if (state.token && $authToken?.parentElement) {
+      $authToken.parentElement.style.display = 'none';
+    }
+    const $controlsNote = document.getElementById('controlsNote');
+    if ($controlsNote && (state.apiBaseUrl || state.token)) {
+      $controlsNote.style.display = 'none';
+    }
+
     if (state.user) {
       $userMeta.textContent = `${state.user.name || state.user.id || 'User'} @ ${new URL(state.apiBaseUrl).host}`;
     } else if (state.token) {
@@ -71,6 +95,24 @@
     } else {
       $userMeta.textContent = 'Not authenticated';
     }
+  }
+
+  function mapPlatformInitToPayload(message) {
+    const token = message?.user?.['auth-token'] || message?.user?.authToken || null;
+    const apiBaseUrl = message?.config?.['api-endpoint'] || message?.config?.apiEndpoint || null;
+    const equipmentId = message?.flowiseContext?.equipmentId || null;
+    const user = message?.user ? {
+      id: message.user.id,
+      name: [message.user.name, message.user.surname].filter(Boolean).join(' ') || message.user.email || message.user.id,
+      email: message.user.email
+    } : null;
+    return {
+      type: 'mywai_payload',
+      token,
+      apiBaseUrl,
+      equipmentId,
+      user
+    };
   }
 
   function normalizeToken(token) {
