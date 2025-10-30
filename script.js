@@ -41,6 +41,7 @@
   // Timeseries elements removed
   const $imagesGrid = document.getElementById('imagesGrid');
   const $filesList = document.getElementById('filesList');
+  const $footer = document.querySelector('.app-footer');
 
   // Defaults for standalone usage; payload will override when embedded
   $apiBaseUrl.value = 'https://rossana.platform.myw.ai/api';
@@ -90,6 +91,11 @@
     const $controlsNote = document.getElementById('controlsNote');
     if ($controlsNote && (state.apiBaseUrl || state.token)) {
       $controlsNote.style.display = 'none';
+    }
+
+    // Hide footer hint once payload is received
+    if ($footer) {
+      $footer.style.display = 'none';
     }
 
     if (state.user) {
@@ -354,10 +360,21 @@
       return;
     }
     for (const img of valid) {
+      const wrap = document.createElement('div');
+      wrap.className = 'item';
+
       const el = document.createElement('img');
       el.src = img.url;
       el.alt = img.name || 'image';
-      $imagesGrid.appendChild(el);
+
+      const caption = document.createElement('div');
+      caption.className = 'caption';
+      caption.title = img.name || '';
+      caption.textContent = img.name || '';
+
+      wrap.appendChild(el);
+      wrap.appendChild(caption);
+      $imagesGrid.appendChild(wrap);
     }
   }
 
