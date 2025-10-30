@@ -63,8 +63,12 @@
     }
   });
 
-  // Proactively acknowledge so the platform will send the init payload
-  try { window.parent?.postMessage('acknowledgment', '*'); } catch {}
+  // Proactively acknowledge (with a short delay) so the platform will send the init payload
+  try {
+    setTimeout(() => {
+      try { window.parent?.postMessage('acknowledgment', '*'); } catch {}
+    }, 300);
+  } catch {}
 
   function applyPayload(payload) {
     state.apiBaseUrl = payload.apiBaseUrl || state.apiBaseUrl || $apiBaseUrl.value || null;
